@@ -1,8 +1,10 @@
 package com.statista.code.challenge.service;
 
-import com.statista.code.challenge.domainobjects.department.*;
+import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.repository.DepartmentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -13,12 +15,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department retrieveDepartment(String departmentRegionValue) {
-        DepartmentRegion departmentRegion = DepartmentRegion.valueOf(departmentRegionValue);
-        return switch (departmentRegion) {
-            case EUROPE -> (EuropeDepartment) departmentRepository.findByProduct(departmentRegion);
-            case UNITED_STATES -> (UnitedStatesDepartment) departmentRepository.findByProduct(departmentRegion);
-            case ASIA -> (AsiaDepartment) departmentRepository.findByProduct(departmentRegion);
-        };
+    public Department retrieveDepartment(String departmentName) {
+        return departmentRepository.findByDepartmentName(departmentName).orElseThrow(() -> new NoSuchElementException("The department " + departmentName + " does not exist"));
     }
 }

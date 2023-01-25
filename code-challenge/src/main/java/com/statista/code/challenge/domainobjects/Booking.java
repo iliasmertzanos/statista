@@ -1,22 +1,19 @@
 package com.statista.code.challenge.domainobjects;
 
 import com.statista.code.challenge.domainobjects.department.Department;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
-import java.util.Currency;
 import java.util.UUID;
 
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class Booking {
     @NotNull
+    @EqualsAndHashCode.Exclude
     private UUID bookingId;
     private String description;
     @NotNull
