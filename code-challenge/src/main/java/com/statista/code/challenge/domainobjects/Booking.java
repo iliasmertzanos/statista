@@ -17,12 +17,14 @@ public class Booking {
     private UUID bookingId;
     private String description;
     @NotNull
+    @EqualsAndHashCode.Exclude
     private Double price;
     @NotNull
     private Currency currency;
     @NotNull
     private LocalDate subscriptionStartDate;
     @NotNull
+    @EqualsAndHashCode.Exclude
     private Email email;
     @NotNull
     private Department department;

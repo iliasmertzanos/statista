@@ -42,9 +42,9 @@ public class BookingServiceDefaultImpl implements BookingService {
 
     private void persisteBooking(Booking booking) {
         if (bookingRepository.exists(booking)) {
-            bookingRepository.createBooking(booking);
-        } else {
             bookingRepository.updateBooking(booking);
+        } else {
+            bookingRepository.createBooking(booking);
         }
     }
 
