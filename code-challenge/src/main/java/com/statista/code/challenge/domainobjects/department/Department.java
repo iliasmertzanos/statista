@@ -19,5 +19,5 @@ public abstract class Department {
 
     // In the code challenge requirements named as doBusiness,
     // but here named according to responsibility of this method
-    public abstract String getBookingInformationInLocalLanguage(Booking booking);
+    public abstract PaymentProposal getPaymentProposal(Booking booking);
 }

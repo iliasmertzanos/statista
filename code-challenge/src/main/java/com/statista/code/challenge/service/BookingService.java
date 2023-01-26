@@ -2,7 +2,9 @@ package com.statista.code.challenge.service;
 
 import com.statista.code.challenge.controller.BookingDTO;
 import com.statista.code.challenge.domainobjects.department.Department;
+import com.statista.code.challenge.domainobjects.department.PaymentProposal;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface BookingService {
@@ -16,7 +18,7 @@ public interface BookingService {
 
     List<String> retrieveCurrentUsedCurrencies();
 
-    Double retrieveBookingsTotalPriceByCurrency(String currency);
+    BigDecimal retrieveBookingsTotalPriceByCurrency(String currency);
 
-    Double retrieveBookingsPriceInLocalCurrency(String bookingId);
+    PaymentProposal determineBookingPaymentProposal(String bookingId);
 }

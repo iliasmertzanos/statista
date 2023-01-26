@@ -1,5 +1,7 @@
 package com.statista.code.challenge.service;
 
-public record BookingResult(String description, Double price, String currency, String subscriptionStartDate,
+import java.math.BigDecimal;
+
+public record BookingResult(String description, BigDecimal price, String currency, String subscriptionStartDate,
                             String email, String departmentName) {
 }

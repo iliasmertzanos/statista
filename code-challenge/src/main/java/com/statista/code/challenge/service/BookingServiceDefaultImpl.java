@@ -5,10 +5,13 @@ import com.statista.code.challenge.domainobjects.Booking;
 import com.statista.code.challenge.domainobjects.Currency;
 import com.statista.code.challenge.domainobjects.Email;
 import com.statista.code.challenge.domainobjects.department.Department;
-import com.statista.code.challenge.repository.BookingRepository;
+import com.statista.code.challenge.domainobjects.department.PaymentProposal;
 import com.statista.code.challenge.exceptions.NotValidEmailException;
+import com.statista.code.challenge.repository.BookingRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -59,14 +62,14 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     @Override
-    public Double retrieveBookingsTotalPriceByCurrency(String currency) {
-        return bookingRepository.findBookingsByCurrency(Currency.valueOf(currency)).stream().mapToDouble(Booking::getPrice).sum();
+    public BigDecimal retrieveBookingsTotalPriceByCurrency(String currency) {
+        return bookingRepository.findBookingsByCurrency(Currency.valueOf(currency)).stream().map(Booking::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
     }
 
     @Override
-    public Double retrieveBookingsPriceInLocalCurrency(String bookingId) {
+    public PaymentProposal determineBookingPaymentProposal(String bookingId) {
         Booking booking = bookingRepository.findByBookingId(UUID.fromString(bookingId)).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
-        return null;
+        return booking.getPaymentProposal();
     }
 
     private Booking persistBooking(BookingDTO bookingDto, Optional<String> bookingId, Department department) {
@@ -82,11 +85,11 @@ public class BookingServiceDefaultImpl implements BookingService {
         notificationService.sendBookingConfirmation(confirmationDetails);
     }
 
-    private BookingResult toBookingResult(Booking bookingResult) {
-        LocalDate subscriptionStartDate = bookingResult.getSubscriptionStartDate();
+    private BookingResult toBookingResult(Booking booking) {
+        LocalDate subscriptionStartDate = booking.getSubscriptionStartDate();
         ZoneId zoneId = ZoneId.systemDefault();
         long subscriptionStartDateLong = subscriptionStartDate.atStartOfDay(zoneId).toEpochSecond();
-        return new BookingResult(bookingResult.getDescription(), bookingResult.getPrice(), bookingResult.getCurrency().name(), Long.toString(subscriptionStartDateLong), bookingResult.getEmail().getEmailAddress(), bookingResult.getDepartment().getName());
+        return new BookingResult(booking.getDescription(), booking.getPrice(), booking.getCurrency().name(), Long.toString(subscriptionStartDateLong), booking.getEmail().getEmailAddress(), booking.getDepartment().getName());
     }
 
     private Booking persistBooking(Booking booking) {
@@ -101,7 +104,8 @@ public class BookingServiceDefaultImpl implements BookingService {
         LocalDate subscriptionStartDate = Instant.ofEpochMilli(Long.parseLong(bookingDTO.subscriptionStartDate())).atZone(ZoneId.systemDefault()).toLocalDate();
         Booking.BookingBuilder builder = Booking.builder();
         bookingId.map(UUID::fromString).or(() -> Optional.of(UUID.randomUUID())).ifPresent(builder::bookingId);
-        return builder.description(bookingDTO.description()).price(bookingDTO.price()).currency(Currency.valueOf(bookingDTO.currency())).subscriptionStartDate(subscriptionStartDate).email(new Email(bookingDTO.email())).department(department).build();
+        BigDecimal price = bookingDTO.price().setScale(2, RoundingMode.UP);
+        return builder.description(bookingDTO.description()).price(price).currency(Currency.valueOf(bookingDTO.currency())).subscriptionStartDate(subscriptionStartDate).email(new Email(bookingDTO.email())).department(department).build();
     }
 
     private ConfirmationDetails parseConfirmationDetails(Booking booking) {

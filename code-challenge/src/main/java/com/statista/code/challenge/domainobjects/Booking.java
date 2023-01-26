@@ -1,12 +1,14 @@
 package com.statista.code.challenge.domainobjects;
 
 import com.statista.code.challenge.domainobjects.department.Department;
+import com.statista.code.challenge.domainobjects.department.PaymentProposal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -19,7 +21,7 @@ public class Booking {
     private UUID bookingId;
     private String description;
     @NotNull
-    private Double price;
+    private BigDecimal price;
     @NotNull
     private Currency currency;
     @NotNull
@@ -29,7 +31,7 @@ public class Booking {
     @NotNull
     private Department department;
 
-    public String getPriceToLocalCurrency() {
-        return department.getBookingInformationInLocalLanguage(this);
+    public PaymentProposal getPaymentProposal() {
+        return department.getPaymentProposal(this);
     }
 }

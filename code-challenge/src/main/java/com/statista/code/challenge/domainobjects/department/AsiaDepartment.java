@@ -2,6 +2,7 @@ package com.statista.code.challenge.domainobjects.department;
 
 import com.statista.code.challenge.domainobjects.Booking;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class AsiaDepartment extends Department {
@@ -9,10 +10,10 @@ public class AsiaDepartment extends Department {
         super(departmentId, name);
     }
 
+    private static final BigDecimal RATE_AMOUNT = BigDecimal.ONE;
+
     @Override
-    public String getBookingInformationInLocalLanguage(Booking booking) {
-        return "元越何月明字。當上當風要遊。書應案列邊照業一力樹原活有 Booking: " + booking.getBookingId() + " 資生備要府能車進發年還備行汽快一著買種作客的片，Price: " + booking.getPrice() + booking.getCurrency().getSymbol() + " 資生備要府能車進發年還備 " + booking.getDescription();
+    public PaymentProposal getPaymentProposal(Booking booking) {
+        return new PaymentProposal(booking.getPrice(), BigDecimal.ZERO, RATE_AMOUNT);
     }
 }
-
-

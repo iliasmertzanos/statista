@@ -1,6 +1,7 @@
 package com.statista.code.challenge.controller;
 
 import com.statista.code.challenge.domainobjects.department.Department;
+import com.statista.code.challenge.domainobjects.department.PaymentProposal;
 import com.statista.code.challenge.service.BookingResult;
 import com.statista.code.challenge.service.BookingService;
 import com.statista.code.challenge.service.DepartmentService;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Controller
@@ -55,8 +57,14 @@ public class BookingController {
     }
 
     @GetMapping("/booking/sum/{currency}")
-    public ResponseEntity<Double> getBookingsTotalPriceByCurrency(@PathVariable String currency) {
-        Double bookingsTotalPrice = bookingService.retrieveBookingsTotalPriceByCurrency(currency);
+    public ResponseEntity<BigDecimal> getBookingsTotalPriceByCurrency(@PathVariable String currency) {
+        BigDecimal bookingsTotalPrice = bookingService.retrieveBookingsTotalPriceByCurrency(currency);
         return ResponseEntity.ok(bookingsTotalPrice);
+    }
+
+    @GetMapping("/booking/paymentProposal/{bookingId}")
+    public ResponseEntity<PaymentProposal> getBookingPaymentProposal(@PathVariable String bookingId) {
+        PaymentProposal paymentProposal = bookingService.determineBookingPaymentProposal(bookingId);
+        return ResponseEntity.ok(paymentProposal);
     }
 }
