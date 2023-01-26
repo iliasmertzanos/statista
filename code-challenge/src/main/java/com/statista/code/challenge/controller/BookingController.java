@@ -4,8 +4,6 @@ import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.service.BookingResult;
 import com.statista.code.challenge.service.BookingService;
 import com.statista.code.challenge.service.DepartmentService;
-import org.json.JSONObject;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -50,29 +48,15 @@ public class BookingController {
         return ResponseEntity.ok(bookingResults);
     }
 
-    @GetMapping("/booking/department/currencies")
+    @GetMapping("/booking/currencies")
     public ResponseEntity<List<String>> getCurrentUsedCurrencies() {
         List<String> bookingResults = bookingService.retrieveCurrentUsedCurrencies();
         return ResponseEntity.ok(bookingResults);
     }
 
-    @GetMapping("/booking/department/{currency}")
+    @GetMapping("/booking/sum/{currency}")
     public ResponseEntity<Double> getBookingsTotalPriceByCurrency(@PathVariable String currency) {
         Double bookingsTotalPrice = bookingService.retrieveBookingsTotalPriceByCurrency(currency);
         return ResponseEntity.ok(bookingsTotalPrice);
-    }
-
-    @GetMapping("/booking/department/{departmentId}")
-    public ResponseEntity<Double> getBookingsPriceInLocalCurrency(@PathVariable String bookingId) {
-        Double bookingPrice = bookingService.retrieveBookingsPriceInLocalCurrency(bookingId);
-        return ResponseEntity.ok(bookingPrice);
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> runtimeExceptionHandler(RuntimeException e) {
-        JSONObject response = new JSONObject();
-        response.put("stackTrace", e.getStackTrace());
-        response.put("message", e.getMessage());
-        return new ResponseEntity<>(response.toString(), HttpStatus.BAD_REQUEST);
     }
 }

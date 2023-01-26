@@ -6,7 +6,7 @@ import com.statista.code.challenge.domainobjects.Currency;
 import com.statista.code.challenge.domainobjects.Email;
 import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.repository.BookingRepository;
-import com.statista.code.challenge.service.exceptions.NotValidEmailException;
+import com.statista.code.challenge.exceptions.NotValidEmailException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

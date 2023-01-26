@@ -2,10 +2,12 @@ package com.statista.code.challenge.domainobjects.department;
 
 import com.statista.code.challenge.domainobjects.Booking;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.UUID;
 
 @Getter
+@ToString
 public abstract class Department {
     protected UUID departmentId;
     protected String name;
