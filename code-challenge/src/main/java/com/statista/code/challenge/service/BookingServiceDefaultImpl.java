@@ -33,9 +33,9 @@ public class BookingServiceDefaultImpl implements BookingService {
     @Override
     public BookingResult createBookingAndSendEmail(BookingDTO bookingDto, Department department) {
         Booking booking = parseBooking(bookingDto, department, Optional.empty());
-        bookingRepository.createBooking(booking);
-        sendEmailToCustomer(booking);
-        return toBookingResult(booking);
+        Booking persistedBooking = bookingRepository.createBooking(booking);
+        sendEmailToCustomer(persistedBooking);
+        return toBookingResult(persistedBooking);
     }
 
     @Override
