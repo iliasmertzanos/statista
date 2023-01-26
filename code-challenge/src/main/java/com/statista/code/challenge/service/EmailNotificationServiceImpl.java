@@ -1,5 +1,7 @@
 package com.statista.code.challenge.service;
 
+import com.statista.code.challenge.service.exceptions.ServerNotReachableException;
+import com.statista.code.challenge.service.exceptions.ServerNotSupportedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

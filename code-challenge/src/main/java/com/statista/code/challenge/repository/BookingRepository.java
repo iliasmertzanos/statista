@@ -2,10 +2,18 @@ package com.statista.code.challenge.repository;
 
 import com.statista.code.challenge.domainobjects.Booking;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 public interface BookingRepository {
-    boolean exists(Booking booking);
+    boolean exists(UUID bookingId);
 
     Booking updateBooking(Booking booking);
 
+    Optional<Booking> findByBookingId(UUID bookingId);
+
     Booking createBooking(Booking booking);
+
+    List<Booking> findBookingByDepartmentId(UUID departmentId);
 }

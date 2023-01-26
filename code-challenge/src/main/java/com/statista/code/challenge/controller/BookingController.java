@@ -1,5 +1,6 @@
 package com.statista.code.challenge.controller;
 
+import com.statista.code.challenge.domainobjects.Booking;
 import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.service.BookingResult;
 import com.statista.code.challenge.service.BookingService;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/bookingservice")
@@ -29,19 +32,23 @@ public class BookingController {
         return ResponseEntity.ok(bookingResult);
     }
 
-    @PutMapping("/booking/{transactionId}")
-    public ResponseEntity updateBooking() {
-        return ResponseEntity.ok().build();
+    @PutMapping("/booking/{bookingId}")
+    public ResponseEntity<BookingResult> updateBooking(@PathVariable String bookingId, @RequestBody BookingDTO bookingDto) {
+        Department department = departmentService.retrieveDepartment(bookingDto.departmentName());
+        BookingResult bookingResult = bookingService.persistBooking(bookingDto, bookingId, department);
+        return ResponseEntity.ok(bookingResult);
     }
 
     @GetMapping("/booking/{bookingId}")
-    public ResponseEntity getBookingById() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<BookingResult> getBookingById(@PathVariable String bookingId) {
+        BookingResult bookingResult = bookingService.retrieveBooking(bookingId);
+        return ResponseEntity.ok(bookingResult);
     }
 
-    @GetMapping("/booking/type/{type}")
-    public ResponseEntity getBookingsOfType() {
-        return ResponseEntity.ok().build();
+    @GetMapping("/booking/department/{departmentId}")
+    public ResponseEntity<List<BookingResult>> getBookingsByDepartments(@PathVariable String departmentId) {
+        List<BookingResult> bookingResults = bookingService.retrieveBookings(departmentId);
+        return ResponseEntity.ok(bookingResults);
     }
 
     @ExceptionHandler(RuntimeException.class)
