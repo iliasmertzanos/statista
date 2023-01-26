@@ -13,4 +13,10 @@ public interface BookingService {
     BookingResult retrieveBooking(String bookingId);
 
     List<BookingResult> retrieveBookings(String departmentId);
+
+    List<String> retrieveCurrentUsedCurrencies();
+
+    Double retrieveBookingsTotalPriceByCurrency(String currency);
+
+    Double retrieveBookingsPriceInLocalCurrency(String bookingId);
 }

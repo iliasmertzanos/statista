@@ -28,4 +28,8 @@ public class Booking {
     private Email email;
     @NotNull
     private Department department;
+
+    public String getPriceToLocalCurrency() {
+        return department.getBookingInformationInLocalLanguage(this);
+    }
 }

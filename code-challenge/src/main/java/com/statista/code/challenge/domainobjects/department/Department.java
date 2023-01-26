@@ -1,5 +1,6 @@
 package com.statista.code.challenge.domainobjects.department;
 
+import com.statista.code.challenge.domainobjects.Booking;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -16,7 +17,5 @@ public abstract class Department {
 
     // In the code challenge requirements named as doBusiness,
     // but here named according to responsibility of this method
-    public abstract String getBookingPriceToLocalCurrency(Long booking);
-
-
+    public abstract String getBookingInformationInLocalLanguage(Booking booking);
 }

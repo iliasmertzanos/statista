@@ -53,6 +53,22 @@ public class BookingServiceDefaultImpl implements BookingService {
         return bookings.stream().map(this::toBookingResult).toList();
     }
 
+    @Override
+    public List<String> retrieveCurrentUsedCurrencies() {
+        return bookingRepository.findAllUsedCurrencies();
+    }
+
+    @Override
+    public Double retrieveBookingsTotalPriceByCurrency(String currency) {
+        return bookingRepository.findBookingsByCurrency(Currency.valueOf(currency)).stream().mapToDouble(Booking::getPrice).sum();
+    }
+
+    @Override
+    public Double retrieveBookingsPriceInLocalCurrency(String bookingId) {
+        Booking booking = bookingRepository.findByBookingId(UUID.fromString(bookingId)).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
+        return null;
+    }
+
     private Booking persistBooking(BookingDTO bookingDto, Optional<String> bookingId, Department department) {
         Booking booking = parseBooking(bookingDto, department, bookingId);
         return persistBooking(booking);
@@ -81,14 +97,14 @@ public class BookingServiceDefaultImpl implements BookingService {
         }
     }
 
-    public Booking parseBooking(BookingDTO bookingDTO, Department department, Optional<String> bookingId) {
+    private Booking parseBooking(BookingDTO bookingDTO, Department department, Optional<String> bookingId) {
         LocalDate subscriptionStartDate = Instant.ofEpochMilli(Long.parseLong(bookingDTO.subscriptionStartDate())).atZone(ZoneId.systemDefault()).toLocalDate();
         Booking.BookingBuilder builder = Booking.builder();
         bookingId.map(UUID::fromString).or(() -> Optional.of(UUID.randomUUID())).ifPresent(builder::bookingId);
         return builder.description(bookingDTO.description()).price(bookingDTO.price()).currency(Currency.valueOf(bookingDTO.currency())).subscriptionStartDate(subscriptionStartDate).email(new Email(bookingDTO.email())).department(department).build();
     }
 
-    public ConfirmationDetails parseConfirmationDetails(Booking booking) {
+    private ConfirmationDetails parseConfirmationDetails(Booking booking) {
         return new ConfirmationDetails("Booking: " + booking.getBookingId() + " was received, we will get in touch with we in a few days.", booking.getEmail().getEmailAddress());
     }
 }

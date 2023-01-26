@@ -1,5 +1,8 @@
 package com.statista.code.challenge.domainobjects.department;
 
+import com.statista.code.challenge.domainobjects.Booking;
+import com.statista.code.challenge.domainobjects.Currency;
+
 import java.util.UUID;
 
 public class EuropeDepartment extends Department {
@@ -8,7 +11,7 @@ public class EuropeDepartment extends Department {
     }
 
     @Override
-    public String getBookingPriceToLocalCurrency(Long booking) {
+    public String getBookingInformationInLocalLanguage(Booking booking) {
         return null;
     }
 }

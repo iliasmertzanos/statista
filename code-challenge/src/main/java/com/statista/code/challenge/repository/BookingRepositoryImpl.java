@@ -1,6 +1,7 @@
 package com.statista.code.challenge.repository;
 
 import com.statista.code.challenge.domainobjects.Booking;
+import com.statista.code.challenge.domainobjects.Currency;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
@@ -46,5 +47,15 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public List<Booking> findBookingByDepartmentId(UUID departmentId) {
         return bookings.stream().filter(booking -> booking.getDepartment().getDepartmentId().equals(departmentId)).toList();
+    }
+
+    @Override
+    public List<String> findAllUsedCurrencies() {
+        return bookings.stream().map(Booking::getCurrency).map(Enum::name).toList();
+    }
+
+    @Override
+    public List<Booking> findBookingsByCurrency(Currency currency) {
+        return bookings.stream().filter(booking -> booking.getCurrency().equals(currency)).toList();
     }
 }

@@ -1,6 +1,5 @@
 package com.statista.code.challenge.controller;
 
-import com.statista.code.challenge.domainobjects.Booking;
 import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.service.BookingResult;
 import com.statista.code.challenge.service.BookingService;
@@ -49,6 +48,24 @@ public class BookingController {
     public ResponseEntity<List<BookingResult>> getBookingsByDepartments(@PathVariable String departmentId) {
         List<BookingResult> bookingResults = bookingService.retrieveBookings(departmentId);
         return ResponseEntity.ok(bookingResults);
+    }
+
+    @GetMapping("/booking/department/currencies")
+    public ResponseEntity<List<String>> getCurrentUsedCurrencies() {
+        List<String> bookingResults = bookingService.retrieveCurrentUsedCurrencies();
+        return ResponseEntity.ok(bookingResults);
+    }
+
+    @GetMapping("/booking/department/{currency}")
+    public ResponseEntity<Double> getBookingsTotalPriceByCurrency(@PathVariable String currency) {
+        Double bookingsTotalPrice = bookingService.retrieveBookingsTotalPriceByCurrency(currency);
+        return ResponseEntity.ok(bookingsTotalPrice);
+    }
+
+    @GetMapping("/booking/department/{departmentId}")
+    public ResponseEntity<Double> getBookingsPriceInLocalCurrency(@PathVariable String bookingId) {
+        Double bookingPrice = bookingService.retrieveBookingsPriceInLocalCurrency(bookingId);
+        return ResponseEntity.ok(bookingPrice);
     }
 
     @ExceptionHandler(RuntimeException.class)

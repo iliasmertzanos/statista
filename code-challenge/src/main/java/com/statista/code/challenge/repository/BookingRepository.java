@@ -1,6 +1,7 @@
 package com.statista.code.challenge.repository;
 
 import com.statista.code.challenge.domainobjects.Booking;
+import com.statista.code.challenge.domainobjects.Currency;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,8 @@ public interface BookingRepository {
     Booking createBooking(Booking booking);
 
     List<Booking> findBookingByDepartmentId(UUID departmentId);
+
+    List<String> findAllUsedCurrencies();
+
+    List<Booking> findBookingsByCurrency(Currency currency);
 }
