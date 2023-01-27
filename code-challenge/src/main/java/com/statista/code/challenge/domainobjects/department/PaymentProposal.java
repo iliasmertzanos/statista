@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 public class PaymentProposal {
-    BigDecimal paymentRate;
+    BigDecimal paymentRateAmount;
     BigDecimal upfrontFee;
     BigDecimal ratesTotal;
 }

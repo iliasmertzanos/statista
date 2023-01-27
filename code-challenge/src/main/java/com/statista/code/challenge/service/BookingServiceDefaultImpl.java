@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,20 +36,20 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     @Override
-    public BookingResult persistBooking(BookingDTO bookingDto, String bookingId, Department department) {
+    public BookingResult persistBooking(BookingDTO bookingDto, UUID bookingId, Department department) {
         Booking booking = persistBooking(bookingDto, Optional.of(bookingId), department);
         return toBookingResult(booking);
     }
 
     @Override
-    public BookingResult retrieveBooking(String bookingId) {
-        Booking booking = bookingRepository.findByBookingId(UUID.fromString(bookingId)).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
+    public BookingResult retrieveBooking(UUID bookingId) {
+        Booking booking = bookingRepository.findByBookingId(bookingId).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
         return toBookingResult(booking);
     }
 
     @Override
-    public List<BookingResult> retrieveBookings(String departmentId) {
-        List<Booking> bookings = bookingRepository.findBookingByDepartmentId(UUID.fromString(departmentId));
+    public List<BookingResult> retrieveBookings(UUID departmentId) {
+        List<Booking> bookings = bookingRepository.findBookingByDepartmentId(departmentId);
         return bookings.stream().map(this::toBookingResult).toList();
     }
 
@@ -62,17 +59,18 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     @Override
-    public BigDecimal retrieveBookingsTotalPriceByCurrency(String currency) {
-        return bookingRepository.findBookingsByCurrency(Currency.valueOf(currency)).stream().map(Booking::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
+    public BigDecimal retrieveBookingsTotalPriceByCurrency(Currency currency) {
+        return bookingRepository.findBookingsByCurrency(currency).stream().map(Booking::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
     }
 
     @Override
-    public PaymentProposal determineBookingPaymentProposal(String bookingId) {
-        Booking booking = bookingRepository.findByBookingId(UUID.fromString(bookingId)).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
+    //doBusiness
+    public PaymentProposal determineBookingPaymentProposal(UUID bookingId) {
+        Booking booking = bookingRepository.findByBookingId(bookingId).orElseThrow(() -> new NoSuchElementException("The booking " + bookingId + " does not exist"));
         return booking.getPaymentProposal();
     }
 
-    private Booking persistBooking(BookingDTO bookingDto, Optional<String> bookingId, Department department) {
+    private Booking persistBooking(BookingDTO bookingDto, Optional<UUID> bookingId, Department department) {
         Booking booking = parseBooking(bookingDto, department, bookingId);
         return persistBooking(booking);
     }
@@ -86,10 +84,7 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     private BookingResult toBookingResult(Booking booking) {
-        LocalDate subscriptionStartDate = booking.getSubscriptionStartDate();
-        ZoneId zoneId = ZoneId.systemDefault();
-        long subscriptionStartDateLong = subscriptionStartDate.atStartOfDay(zoneId).toEpochSecond();
-        return new BookingResult(booking.getDescription(), booking.getPrice(), booking.getCurrency().name(), Long.toString(subscriptionStartDateLong), booking.getEmail().getEmailAddress(), booking.getDepartment().getName());
+        return new BookingResult(booking.getDescription(), booking.getPrice(), booking.getCurrency(), booking.getSubscriptionStartDate(), booking.getEmail().getEmailAddress(), booking.getDepartment().getName());
     }
 
     private Booking persistBooking(Booking booking) {
@@ -100,12 +95,11 @@ public class BookingServiceDefaultImpl implements BookingService {
         }
     }
 
-    private Booking parseBooking(BookingDTO bookingDTO, Department department, Optional<String> bookingId) {
-        LocalDate subscriptionStartDate = Instant.ofEpochMilli(Long.parseLong(bookingDTO.subscriptionStartDate())).atZone(ZoneId.systemDefault()).toLocalDate();
+    private Booking parseBooking(BookingDTO bookingDTO, Department department, Optional<UUID> optionalBookingId) {
         Booking.BookingBuilder builder = Booking.builder();
-        bookingId.map(UUID::fromString).or(() -> Optional.of(UUID.randomUUID())).ifPresent(builder::bookingId);
+        UUID bookingId = optionalBookingId.orElse(UUID.randomUUID());
         BigDecimal price = bookingDTO.price().setScale(2, RoundingMode.UP);
-        return builder.description(bookingDTO.description()).price(price).currency(Currency.valueOf(bookingDTO.currency())).subscriptionStartDate(subscriptionStartDate).email(new Email(bookingDTO.email())).department(department).build();
+        return builder.bookingId(bookingId).description(bookingDTO.description()).price(price).currency(bookingDTO.currency()).subscriptionStartDate(bookingDTO.subscriptionStartDate()).email(new Email(bookingDTO.email())).department(department).build();
     }
 
     private ConfirmationDetails parseConfirmationDetails(Booking booking) {

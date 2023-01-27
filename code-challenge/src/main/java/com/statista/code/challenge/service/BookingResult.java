@@ -1,7 +1,10 @@
 package com.statista.code.challenge.service;
 
-import java.math.BigDecimal;
+import com.statista.code.challenge.domainobjects.Currency;
 
-public record BookingResult(String description, BigDecimal price, String currency, String subscriptionStartDate,
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+public record BookingResult(String description, BigDecimal price, Currency currency, LocalDate subscriptionStartDate,
                             String email, String departmentName) {
 }

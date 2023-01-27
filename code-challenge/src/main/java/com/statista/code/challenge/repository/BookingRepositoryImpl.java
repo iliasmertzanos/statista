@@ -40,7 +40,7 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public Booking createBooking(Booking booking) {
         bookings.add(booking);
-        log.info("create bookings: " + bookings.stream().map(Booking::toString).collect(Collectors.joining(",/n")));
+        log.info("create bookings: " + bookings.stream().map(Booking::toString).collect(Collectors.joining(",")));
         return booking;
     }
 
