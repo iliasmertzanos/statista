@@ -1,9 +1,10 @@
 package com.statista.code.challenge.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.statista.code.challenge.domainobjects.Booking;
 import com.statista.code.challenge.domainobjects.Currency;
 import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.domainobjects.department.EuropeDepartment;
@@ -20,14 +21,16 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookingController.class)
-public class BookingControllerTest {
+class BookingControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -40,18 +43,25 @@ public class BookingControllerTest {
     @Test
     void test_createBookingAndSendEmail() throws Exception {
         BookingDTO bookingDTO = createBookingDTO("muestermann@gmail.com");
-        EuropeDepartment department = new EuropeDepartment(UUID.randomUUID(), "");
-        when(bookingService.createBookingAndSendEmail(bookingDTO, department)).thenReturn(parseBooking(bookingDTO, department));
+        EuropeDepartment department = new EuropeDepartment(UUID.randomUUID(), bookingDTO.departmentName());
         when(departmentService.retrieveDepartment(department.getName())).thenReturn(department);
+        BookingResult expected = parseBooking(bookingDTO, department);
+        when(bookingService.createBookingAndSendEmail(bookingDTO, department)).thenReturn(expected);
         MvcResult mvcResult = mockMvc.perform(post(BASIC_URL + "/booking")
                         .content(asJsonString(bookingDTO))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isCreated())
                 .andReturn();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String content = mvcResult.getResponse().getContentAsString();
+        BookingResult bookingResult = objectMapper.readValue(content, new TypeReference<>() {});
+        assertThat(expected).isEqualTo(bookingResult);
     }
 
-    public static String asJsonString(final Object obj) throws JsonProcessingException {
+    private String asJsonString(final Object obj) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper.writeValueAsString(obj);
