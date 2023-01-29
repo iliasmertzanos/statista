@@ -35,7 +35,7 @@ public class BookingController {
     }
 
     @PutMapping("/booking/{bookingId}")
-    public ResponseEntity<BookingResult> updateBooking(@PathVariable UUID bookingId, @RequestBody BookingDTO bookingDto) {
+    public ResponseEntity<BookingResult> persistBooking(@PathVariable UUID bookingId, @RequestBody BookingDTO bookingDto) {
         Department department = departmentService.retrieveDepartment(bookingDto.departmentName());
         BookingResult bookingResult = bookingService.persistBooking(bookingDto, bookingId, department);
         return ResponseEntity.ok(bookingResult);

@@ -7,4 +7,7 @@ import java.time.LocalDate;
 
 public record BookingResult(String description, BigDecimal price, Currency currency, LocalDate subscriptionStartDate,
                             String email, String departmentName) {
+    public BookingResult(){
+        this("",BigDecimal.ZERO,null, LocalDate.now(),"","");
+    }
 }

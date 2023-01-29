@@ -8,6 +8,8 @@ import com.statista.code.challenge.domainobjects.Email;
 import com.statista.code.challenge.domainobjects.department.Department;
 import com.statista.code.challenge.domainobjects.department.EuropeDepartment;
 import com.statista.code.challenge.exceptions.NotValidEmailException;
+import com.statista.code.challenge.exceptions.ServerNotReachableException;
+import com.statista.code.challenge.exceptions.ServerNotSupportedException;
 import com.statista.code.challenge.repository.BookingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +52,7 @@ class BookingService_createBookingAndSendEmailTest {
 
         assertEquals(booking, bookingResult);
 
-        assertEmailIsOnTheWay(booking);
+        assertConfirmationHandedOverToService(booking);
     }
 
     @Test
@@ -65,7 +68,35 @@ class BookingService_createBookingAndSendEmailTest {
         verify(notificationService, never()).sendBookingConfirmation(confirmationDetailsArgumentCaptor.capture());
     }
 
-    private void assertEmailIsOnTheWay(Booking booking) {
+    @Test
+    void testServerNotReachable() {
+        BookingDTO bookingDTO = createBookingDTO("ilias@server.foobar");
+        EuropeDepartment europeDepartment = new EuropeDepartment(UUID.randomUUID(), "EUROPE REPORTS");
+        Booking booking = parseBooking(bookingDTO, europeDepartment);
+        ConfirmationDetails confirmationDetails = parseConfirmationDetails(booking);
+        when(bookingRepository.createBooking(any())).thenReturn(booking);
+        willThrow(ServerNotReachableException.class).given(notificationService).sendBookingConfirmation(confirmationDetails);
+
+        assertThrows(ServerNotReachableException.class, () -> bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment));
+
+        assertConfirmationHandedOverToService(booking);
+    }
+
+    @Test
+    void testServerNotSupported() {
+        BookingDTO bookingDTO = createBookingDTO("ilias@foobar.org");
+        EuropeDepartment europeDepartment = new EuropeDepartment(UUID.randomUUID(), "EUROPE REPORTS");
+        Booking booking = parseBooking(bookingDTO, europeDepartment);
+        ConfirmationDetails confirmationDetails = parseConfirmationDetails(booking);
+        when(bookingRepository.createBooking(any())).thenReturn(booking);
+        willThrow(ServerNotSupportedException.class).given(notificationService).sendBookingConfirmation(confirmationDetails);
+
+        assertThrows(ServerNotSupportedException.class, () -> bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment));
+
+        assertConfirmationHandedOverToService(booking);
+    }
+
+    private void assertConfirmationHandedOverToService(Booking booking) {
         ArgumentCaptor<ConfirmationDetails> confirmationDetailsArgumentCaptor = ArgumentCaptor.forClass(ConfirmationDetails.class);
         verify(notificationService, Mockito.times(1)).sendBookingConfirmation(confirmationDetailsArgumentCaptor.capture());
         List<ConfirmationDetails> confirmationDetailsArguments = confirmationDetailsArgumentCaptor.getAllValues().stream().toList();
@@ -90,5 +121,9 @@ class BookingService_createBookingAndSendEmailTest {
 
     private BookingDTO createBookingDTO(String email) {
         return new BookingDTO("reports", BigDecimal.valueOf(25.00), Currency.USD, LocalDate.now(), email, "EUROPE REPORTS");
+    }
+
+    private ConfirmationDetails parseConfirmationDetails(Booking booking) {
+        return new ConfirmationDetails("Booking: " + booking.getBookingId() + " was received, we will get in touch with we in a few days.", booking.getEmail().getEmailAddress());
     }
 }

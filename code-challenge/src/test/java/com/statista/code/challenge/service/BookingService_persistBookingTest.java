@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BookingService_persisteBookingTest {
+class BookingService_persistBookingTest {
 
     @InjectMocks
     private BookingServiceDefaultImpl bookingService;
@@ -32,13 +32,29 @@ class BookingService_persisteBookingTest {
     private BookingRepository bookingRepository;
 
     @Test
-    void testHappyPath() {
+    void testHappyPath_BookingExistsThenUpdate() {
         BookingDTO bookingDTO = createBookingDTO();
         EuropeDepartment europeDepartment = new EuropeDepartment(UUID.randomUUID(), "EUROPE REPORTS");
         Booking booking = parseBooking(bookingDTO, europeDepartment);
+        UUID bookingId = booking.getBookingId();
+        when(bookingRepository.exists(bookingId)).thenReturn(false);
         when(bookingRepository.createBooking(any())).thenReturn(booking);
 
-        BookingResult bookingResult = bookingService.persistBooking(bookingDTO, UUID.randomUUID(), europeDepartment);
+        BookingResult bookingResult = bookingService.persistBooking(bookingDTO, bookingId, europeDepartment);
+
+        assertEquals(booking, bookingResult);
+    }
+
+    @Test
+    void testHappyPath_NotExistsThenCreate() {
+        BookingDTO bookingDTO = createBookingDTO();
+        EuropeDepartment europeDepartment = new EuropeDepartment(UUID.randomUUID(), "EUROPE REPORTS");
+        Booking booking = parseBooking(bookingDTO, europeDepartment);
+        UUID bookingId = booking.getBookingId();
+        when(bookingRepository.exists(bookingId)).thenReturn(true);
+        when(bookingRepository.updateBooking(any())).thenReturn(booking);
+
+        BookingResult bookingResult = bookingService.persistBooking(bookingDTO, bookingId, europeDepartment);
 
         assertEquals(booking, bookingResult);
     }

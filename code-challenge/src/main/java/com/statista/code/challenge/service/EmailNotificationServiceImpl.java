@@ -9,22 +9,19 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EmailNotificationServiceImpl implements NotificationService {
 
-    private final EmailSender emailSender;
-
-    public EmailNotificationServiceImpl(EmailSender emailSender) {
-        this.emailSender = emailSender;
-    }
-
     @Override
     public void sendBookingConfirmation(ConfirmationDetails confirmationDetails) {
         String emailAddress = confirmationDetails.emailAddress();
+        //Here just mocking the case that a server is not reachable
         if (emailAddress.contains("server.foobar")) {
+            log.error("The server server.foobar is not reachable");
             throw new ServerNotReachableException("The server server.foobar is not reachable");
         }
+        //and here that this domain ist not supported
         if (emailAddress.endsWith("foobar.org")) {
             log.error("Server domain foobar.org is not valid");
             throw new ServerNotSupportedException("Server domain is not valid");
         }
-        emailSender.sendEmail(confirmationDetails);
+        log.info("Email with body : '" + confirmationDetails.body() + "' was send to email: " + confirmationDetails.emailAddress());
     }
 }

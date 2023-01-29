@@ -40,9 +40,9 @@ class BookingService_determineBookingPaymentProposalTest {
 
         PaymentProposal paymentProposal = bookingService.determineBookingPaymentProposal(booking.getBookingId());
 
-        assertThat(paymentProposal.getPaymentRateAmount()).isEqualTo(BigDecimal.valueOf(4.17));
-        assertThat(paymentProposal.getRatesTotal()).isEqualTo(BigDecimal.valueOf(12));
-        assertThat(paymentProposal.getUpfrontFee()).isEqualTo(BigDecimal.valueOf(50).setScale(2, RoundingMode.UP));
+        assertThat(paymentProposal.paymentRateAmount()).isEqualTo(BigDecimal.valueOf(4.17));
+        assertThat(paymentProposal.ratesTotal()).isEqualTo(BigDecimal.valueOf(12));
+        assertThat(paymentProposal.upfrontFee()).isEqualTo(BigDecimal.valueOf(50).setScale(2, RoundingMode.UP));
     }
 
     @Test
@@ -53,9 +53,9 @@ class BookingService_determineBookingPaymentProposalTest {
 
         PaymentProposal paymentProposal = bookingService.determineBookingPaymentProposal(booking.getBookingId());
 
-        assertThat(paymentProposal.getPaymentRateAmount()).isEqualTo(BigDecimal.valueOf(100.00));
-        assertThat(paymentProposal.getRatesTotal()).isEqualTo(BigDecimal.ONE);
-        assertThat(paymentProposal.getUpfrontFee()).isEqualTo(BigDecimal.ZERO);
+        assertThat(paymentProposal.paymentRateAmount()).isEqualTo(BigDecimal.valueOf(100.00));
+        assertThat(paymentProposal.ratesTotal()).isEqualTo(BigDecimal.ONE);
+        assertThat(paymentProposal.upfrontFee()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -66,9 +66,9 @@ class BookingService_determineBookingPaymentProposalTest {
 
         PaymentProposal paymentProposal = bookingService.determineBookingPaymentProposal(booking.getBookingId());
 
-        assertThat(paymentProposal.getPaymentRateAmount()).isEqualTo(BigDecimal.valueOf(8.4));
-        assertThat(paymentProposal.getRatesTotal()).isEqualTo(BigDecimal.valueOf(12));
-        assertThat(paymentProposal.getUpfrontFee()).isEqualTo(BigDecimal.ZERO);
+        assertThat(paymentProposal.paymentRateAmount()).isEqualTo(BigDecimal.valueOf(8.4));
+        assertThat(paymentProposal.ratesTotal()).isEqualTo(BigDecimal.valueOf(12));
+        assertThat(paymentProposal.upfrontFee()).isEqualTo(BigDecimal.ZERO);
     }
 
     @Test
