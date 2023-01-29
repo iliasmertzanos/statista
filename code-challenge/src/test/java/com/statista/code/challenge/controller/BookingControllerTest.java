@@ -36,59 +36,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//
-//        package de.rola.coolschrank.controller;
-//
-//        import com.fasterxml.jackson.core.type.TypeReference;
-//        import com.fasterxml.jackson.databind.ObjectMapper;
-//        import de.rola.coolschrank.service.ItemParameter;
-//        import de.rola.coolschrank.service.ItemService;
-//        import de.rola.coolschrank.service.outbound.exception.RemoteServerConflictException;
-//        import de.rola.coolschrank.service.outbound.exception.RemoteServerObjectNotFoundException;
-//        import org.junit.jupiter.api.Test;
-//        import org.springframework.beans.factory.annotation.Autowired;
-//        import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-//        import org.springframework.boot.test.mock.mockito.MockBean;
-//        import org.springframework.test.web.servlet.MockMvc;
-//        import org.springframework.test.web.servlet.MvcResult;
-//
-//        import java.util.List;
-//
-//        import static com.google.common.truth.Truth.assertThat;
-//        import static org.mockito.Mockito.when;
-//        import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-//        import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//        import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-//
-//@WebMvcTest(CoolschrankController.class)
-//class CoolschrankControllerTest {
-//
-//    @MockBean
-//    private ItemService itemService;
-//    @Autowired
-//    private MockMvc mockMvc;
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    @Test
-//    void testGetFavoriteItemsShoppingList_happyCase() throws Exception {
-//        String fridgeId = "fridge_id_1234";
-//        List<ItemParameter> itemParameters = List.of(
-//                new ItemParameter("Joghurt", "1", 5),
-//                new ItemParameter("Obst", "2", 10),
-//                new ItemParameter("Fleisch", "3", 15));
-//        when(itemService.obtainFavoriteItemsShoppingList(fridgeId)).thenReturn(itemParameters);
-//        MvcResult mvcResult = mockMvc
-//                .perform(get("/rola/coolschrank/favoriteItems/fridge/" + fridgeId))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//        String content = mvcResult.getResponse().getContentAsString();
-//        List<ItemParameter> shoppingList = objectMapper.readValue(content, new TypeReference<>() {
-//        });
-//        assertThat(shoppingList).hasSize(3);
-//        assertThat(shoppingList).isEqualTo(itemParameters);
-//    }
-//
 @WebMvcTest(BookingController.class)
 class BookingControllerTest {
     @Autowired
@@ -118,7 +65,7 @@ class BookingControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andReturn();
-        BookingResult actualBookingResult = getResponseObject(mvcResult);
+        BookingResult actualBookingResult = getResponseObject(mvcResult, BookingResult.class);
         assertThat(actualBookingResult).isEqualTo(expectedBookingResult);
     }
 
@@ -170,7 +117,7 @@ class BookingControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andReturn();
-        BookingResult actualBookingResult = getResponseObject(mvcResult);
+        BookingResult actualBookingResult = getResponseObject(mvcResult, BookingResult.class);
         assertThat(actualBookingResult).isEqualTo(expectedBookingResult);
     }
 
@@ -181,7 +128,7 @@ class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(BASIC_URL + "/booking/" + bookingId))
                 .andExpect(status().isOk())
                 .andReturn();
-        BookingResult actualBookingResult = getResponseObject(mvcResult);
+        BookingResult actualBookingResult = getResponseObject(mvcResult, BookingResult.class);
         assertThat(actualBookingResult).isEqualTo(expectedBookingResult);
     }
 
@@ -239,7 +186,7 @@ class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(BASIC_URL + "/sum/" + euro))
                 .andExpect(status().isOk())
                 .andReturn();
-        BigDecimal actualTotalPrice = getResponseObject(mvcResult);
+        BigDecimal actualTotalPrice = getResponseObject(mvcResult, BigDecimal.class);
         assertThat(actualTotalPrice).isEqualTo(expectedTotalPrice);
     }
 
@@ -252,8 +199,7 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        PaymentProposal actualPaymentProposal = objectMapper.readValue(content, new TypeReference<>() {
-        });
+        PaymentProposal actualPaymentProposal = getResponseObject(mvcResult, PaymentProposal.class);
         assertThat(actualPaymentProposal).isEqualTo(expectedPaymentProposal);
     }
 
@@ -292,6 +238,11 @@ class BookingControllerTest {
         String content = mvcResult.getResponse().getContentAsString();
         return objectMapper.readValue(content, new TypeReference<>() {
         });
+    }
+
+    private <T> T getResponseObject(MvcResult mvcResult, Class<T> responseClass) throws UnsupportedEncodingException, JsonProcessingException {
+        String content = mvcResult.getResponse().getContentAsString();
+        return objectMapper.readValue(content, responseClass);
     }
 
     private String asJsonString(final Object obj) throws JsonProcessingException {
