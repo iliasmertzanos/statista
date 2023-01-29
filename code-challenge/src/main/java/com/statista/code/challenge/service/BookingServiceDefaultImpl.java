@@ -60,7 +60,10 @@ public class BookingServiceDefaultImpl implements BookingService {
 
     @Override
     public BigDecimal retrieveBookingsTotalPriceByCurrency(Currency currency) {
-        return bookingRepository.findBookingsByCurrency(currency).stream().map(Booking::getPrice).reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.UP);
+        return bookingRepository.findBookingsByCurrency(currency)
+                .stream().map(Booking::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.UP);
     }
 
     @Override
@@ -84,7 +87,12 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     private BookingResult toBookingResult(Booking booking) {
-        return new BookingResult(booking.getDescription(), booking.getPrice(), booking.getCurrency(), booking.getSubscriptionStartDate(), booking.getEmail().getEmailAddress(), booking.getDepartment().getName());
+        return new BookingResult(booking.getDescription(),
+                booking.getPrice(),
+                booking.getCurrency(),
+                booking.getSubscriptionStartDate(),
+                booking.getEmail().getEmailAddress(),
+                booking.getDepartment().getName());
     }
 
     private Booking persistBooking(Booking booking) {
@@ -99,7 +107,13 @@ public class BookingServiceDefaultImpl implements BookingService {
         Booking.BookingBuilder builder = Booking.builder();
         UUID bookingId = optionalBookingId.orElse(UUID.randomUUID());
         BigDecimal price = bookingDTO.price().setScale(2, RoundingMode.UP);
-        return builder.bookingId(bookingId).description(bookingDTO.description()).price(price).currency(bookingDTO.currency()).subscriptionStartDate(bookingDTO.subscriptionStartDate()).email(new Email(bookingDTO.email())).department(department).build();
+        return builder.bookingId(bookingId)
+                .description(bookingDTO.description())
+                .price(price)
+                .currency(bookingDTO.currency())
+                .subscriptionStartDate(bookingDTO.subscriptionStartDate())
+                .email(new Email(bookingDTO.email()))
+                .department(department).build();
     }
 
     private ConfirmationDetails parseConfirmationDetails(Booking booking) {
