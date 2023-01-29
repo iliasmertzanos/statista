@@ -7,6 +7,7 @@ import com.statista.code.challenge.domainobjects.department.PaymentProposal;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface BookingService {
@@ -18,7 +19,7 @@ public interface BookingService {
 
     List<BookingResult> retrieveBookings(UUID departmentId);
 
-    List<String> retrieveCurrentUsedCurrencies();
+    Set<String> retrieveCurrentUsedCurrencies();
 
     BigDecimal retrieveBookingsTotalPriceByCurrency(Currency currency);
 

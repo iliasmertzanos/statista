@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class BookingServiceDefaultImpl implements BookingService {
@@ -54,7 +51,7 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     @Override
-    public List<String> retrieveCurrentUsedCurrencies() {
+    public Set<String> retrieveCurrentUsedCurrencies() {
         return bookingRepository.findAllUsedCurrencies();
     }
 

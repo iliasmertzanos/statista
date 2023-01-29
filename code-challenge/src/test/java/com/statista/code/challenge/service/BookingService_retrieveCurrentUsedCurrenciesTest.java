@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,11 +26,11 @@ class BookingService_retrieveCurrentUsedCurrenciesTest {
 
     @Test
     void testHappyPath() {
-        when(bookingRepository.findAllUsedCurrencies()).thenReturn(List.of("USD", "EURO", "YUAN"));
+        when(bookingRepository.findAllUsedCurrencies()).thenReturn(Set.of("USD", "EURO", "YUAN"));
 
-        List<String> currencies = bookingService.retrieveCurrentUsedCurrencies();
+        Set<String> currencies = bookingService.retrieveCurrentUsedCurrencies();
 
-        assertThat(currencies).hasSize(3).containsExactly("USD", "EURO", "YUAN");
+        assertThat(currencies).hasSize(3).containsExactlyInAnyOrder("USD", "EURO", "YUAN");
     }
 
     @Test

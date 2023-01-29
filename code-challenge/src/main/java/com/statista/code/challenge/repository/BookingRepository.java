@@ -5,6 +5,7 @@ import com.statista.code.challenge.domainobjects.Currency;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface BookingRepository {
@@ -18,7 +19,7 @@ public interface BookingRepository {
 
     List<Booking> findBookingByDepartmentId(UUID departmentId);
 
-    List<String> findAllUsedCurrencies();
+    Set<String> findAllUsedCurrencies();
 
     List<Booking> findBookingsByCurrency(Currency currency);
 }

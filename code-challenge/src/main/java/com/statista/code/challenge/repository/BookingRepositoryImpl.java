@@ -50,8 +50,8 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
-    public List<String> findAllUsedCurrencies() {
-        return bookings.stream().map(Booking::getCurrency).map(Enum::name).toList();
+    public Set<String> findAllUsedCurrencies() {
+        return bookings.stream().map(Booking::getCurrency).map(Enum::name).collect(Collectors.toSet());
     }
 
     @Override

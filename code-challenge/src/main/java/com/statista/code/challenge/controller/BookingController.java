@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Controller
@@ -54,8 +55,8 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/currencies")
-    public ResponseEntity<List<String>> getCurrentUsedCurrencies() {
-        List<String> bookingResults = bookingService.retrieveCurrentUsedCurrencies();
+    public ResponseEntity<Set<String>> getCurrentUsedCurrencies() {
+        Set<String> bookingResults = bookingService.retrieveCurrentUsedCurrencies();
         return ResponseEntity.ok(bookingResults);
     }
 

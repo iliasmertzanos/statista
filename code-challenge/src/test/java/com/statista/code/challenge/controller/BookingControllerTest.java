@@ -26,10 +26,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -169,12 +166,14 @@ class BookingControllerTest {
 
     @Test
     void testGetCurrentUsedCurrencies() throws Exception {
-        List<String> expectedCurrencies = List.of(Currency.EURO.name(), Currency.YUAN.name());
+        Set<String> expectedCurrencies = Set.of(Currency.EURO.name(), Currency.YUAN.name());
         when(bookingService.retrieveCurrentUsedCurrencies()).thenReturn(expectedCurrencies);
         MvcResult mvcResult = mockMvc.perform(get(BASIC_URL + "/bookings/currencies"))
                 .andExpect(status().isOk())
                 .andReturn();
-        List<String> actualCurrencies = getResponseObject(mvcResult);
+        String content = mvcResult.getResponse().getContentAsString();
+        Set<String> actualCurrencies = objectMapper.readValue(content, new TypeReference<>() {
+        });
         assertThat(actualCurrencies).hasSize(2).isEqualTo(expectedCurrencies);
     }
 
@@ -198,7 +197,6 @@ class BookingControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(BASIC_URL + "/booking/paymentProposal/" + bookingId))
                 .andExpect(status().isOk())
                 .andReturn();
-        String content = mvcResult.getResponse().getContentAsString();
         PaymentProposal actualPaymentProposal = getResponseObject(mvcResult, PaymentProposal.class);
         assertThat(actualPaymentProposal).isEqualTo(expectedPaymentProposal);
     }
