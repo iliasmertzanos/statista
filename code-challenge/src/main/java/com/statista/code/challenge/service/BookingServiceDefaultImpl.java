@@ -25,10 +25,10 @@ public class BookingServiceDefaultImpl implements BookingService {
     }
 
     @Override
-    public BookingResult createBookingAndSendEmail(BookingDTO bookingDto, Department department) {
+    public BookingResult createBookingAndNotify(BookingDTO bookingDto, Department department) {
         Booking booking = parseBooking(bookingDto, department, Optional.empty());
         Booking persistedBooking = bookingRepository.createBooking(booking);
-        sendEmailToCustomer(persistedBooking);
+        notifyCustomer(persistedBooking);
         return toBookingResult(persistedBooking);
     }
 
@@ -75,7 +75,7 @@ public class BookingServiceDefaultImpl implements BookingService {
         return persistBooking(booking);
     }
 
-    private void sendEmailToCustomer(Booking booking) {
+    private void notifyCustomer(Booking booking) {
         if (!booking.getEmail().isValid()) {
             throw new NotValidEmailException("The email address: " + booking.getEmail().getEmailAddress() + " ist not valid.");
         }

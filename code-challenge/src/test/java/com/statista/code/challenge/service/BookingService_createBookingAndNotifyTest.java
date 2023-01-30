@@ -32,7 +32,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class BookingService_createBookingAndSendEmailTest {
+class BookingService_createBookingAndNotifyTest {
 
     @InjectMocks
     private BookingServiceDefaultImpl bookingService;
@@ -48,7 +48,7 @@ class BookingService_createBookingAndSendEmailTest {
         Booking booking = parseBooking(bookingDTO, europeDepartment);
         when(bookingRepository.createBooking(any())).thenReturn(booking);
 
-        BookingResult bookingResult = bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment);
+        BookingResult bookingResult = bookingService.createBookingAndNotify(bookingDTO, europeDepartment);
 
         assertEquals(booking, bookingResult);
 
@@ -62,7 +62,7 @@ class BookingService_createBookingAndSendEmailTest {
         Booking booking = parseBooking(bookingDTO, europeDepartment);
         when(bookingRepository.createBooking(any())).thenReturn(booking);
 
-        assertThrows(NotValidEmailException.class, () -> bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment));
+        assertThrows(NotValidEmailException.class, () -> bookingService.createBookingAndNotify(bookingDTO, europeDepartment));
 
         ArgumentCaptor<ConfirmationDetails> confirmationDetailsArgumentCaptor = ArgumentCaptor.forClass(ConfirmationDetails.class);
         verify(notificationService, never()).sendBookingConfirmation(confirmationDetailsArgumentCaptor.capture());
@@ -77,7 +77,7 @@ class BookingService_createBookingAndSendEmailTest {
         when(bookingRepository.createBooking(any())).thenReturn(booking);
         willThrow(ServerNotReachableException.class).given(notificationService).sendBookingConfirmation(confirmationDetails);
 
-        assertThrows(ServerNotReachableException.class, () -> bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment));
+        assertThrows(ServerNotReachableException.class, () -> bookingService.createBookingAndNotify(bookingDTO, europeDepartment));
 
         assertConfirmationHandedOverToService(booking);
     }
@@ -91,7 +91,7 @@ class BookingService_createBookingAndSendEmailTest {
         when(bookingRepository.createBooking(any())).thenReturn(booking);
         willThrow(ServerNotSupportedException.class).given(notificationService).sendBookingConfirmation(confirmationDetails);
 
-        assertThrows(ServerNotSupportedException.class, () -> bookingService.createBookingAndSendEmail(bookingDTO, europeDepartment));
+        assertThrows(ServerNotSupportedException.class, () -> bookingService.createBookingAndNotify(bookingDTO, europeDepartment));
 
         assertConfirmationHandedOverToService(booking);
     }

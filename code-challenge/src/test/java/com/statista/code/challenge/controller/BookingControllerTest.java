@@ -52,7 +52,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void testCreateBookingAndSendEmail() throws Exception {
+    void testCreateBookingAndNotify() throws Exception {
         BookingDTO bookingDTO = createBookingDTO("muestermann@gmail.com");
         BookingResult expectedBookingResult = mockServices(bookingDTO);
         MvcResult mvcResult = mockMvc.perform(post(BASIC_URL + "/booking")
@@ -67,7 +67,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void testCreateBookingAndSendEmail_WithNotValidEmailException() throws Exception {
+    void testCreateBookingAndNotify_WithNotValidEmailException() throws Exception {
         BookingDTO bookingDTO = createBookingDTO("muestermann.gmail.com");
         mockServicesWithException(bookingDTO, NotValidEmailException.class);
         mockMvc.perform(post(BASIC_URL + "/booking")
@@ -79,7 +79,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void testCreateBookingAndSendEmail_ThrowsServerNotReachableException() throws Exception {
+    void testCreateBookingAndNotify_ThrowsServerNotReachableException() throws Exception {
         BookingDTO bookingDTO = createBookingDTO("muestermann@server.foobar");
         mockServicesWithException(bookingDTO, ServerNotReachableException.class);
         mockMvc.perform(post(BASIC_URL + "/booking")
@@ -91,7 +91,7 @@ class BookingControllerTest {
     }
 
     @Test
-    void testCreateBookingAndSendEmail_ThrowsServerNotSupportedException() throws Exception {
+    void testCreateBookingAndNotify_ThrowsServerNotSupportedException() throws Exception {
         BookingDTO bookingDTO = createBookingDTO("muestermann@foobar.org");
         mockServicesWithException(bookingDTO, ServerNotSupportedException.class);
         mockMvc.perform(post(BASIC_URL + "/booking")
@@ -205,7 +205,7 @@ class BookingControllerTest {
         EuropeDepartment department = new EuropeDepartment(UUID.randomUUID(), bookingDTO.departmentName());
         when(departmentService.retrieveDepartment(department.getName())).thenReturn(department);
         BookingResult bookingResult = parseBooking(bookingDTO, department);
-        when(bookingService.createBookingAndSendEmail(bookingDTO, department)).thenReturn(bookingResult);
+        when(bookingService.createBookingAndNotify(bookingDTO, department)).thenReturn(bookingResult);
         return bookingResult;
     }
 
@@ -229,7 +229,7 @@ class BookingControllerTest {
     private <T extends RuntimeException> void mockServicesWithException(BookingDTO bookingDTO, Class<T> exceptionClass) {
         EuropeDepartment department = new EuropeDepartment(UUID.randomUUID(), bookingDTO.departmentName());
         when(departmentService.retrieveDepartment(department.getName())).thenReturn(department);
-        when(bookingService.createBookingAndSendEmail(bookingDTO, department)).thenThrow(exceptionClass);
+        when(bookingService.createBookingAndNotify(bookingDTO, department)).thenThrow(exceptionClass);
     }
 
     private <T> T getResponseObject(MvcResult mvcResult) throws UnsupportedEncodingException, JsonProcessingException {

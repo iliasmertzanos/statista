@@ -29,9 +29,9 @@ public class BookingController {
     }
 
     @PostMapping("/booking")
-    public ResponseEntity<BookingResult> createBookingAndSendEmail(@RequestBody BookingDTO bookingDto) {
+    public ResponseEntity<BookingResult> createBookingAndNotify(@RequestBody BookingDTO bookingDto) {
         Department department = departmentService.retrieveDepartment(bookingDto.departmentName());
-        BookingResult bookingResult = bookingService.createBookingAndSendEmail(bookingDto, department);
+        BookingResult bookingResult = bookingService.createBookingAndNotify(bookingDto, department);
         return ResponseEntity.status(HttpStatus.CREATED).body(bookingResult);
     }
 

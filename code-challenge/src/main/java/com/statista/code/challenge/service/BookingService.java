@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface BookingService {
-    BookingResult createBookingAndSendEmail(BookingDTO bookingDto, Department department);
+    BookingResult createBookingAndNotify(BookingDTO bookingDto, Department department);
 
     BookingResult persistBooking(BookingDTO bookingDto, UUID bookingId, Department department);
 
